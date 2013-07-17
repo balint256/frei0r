@@ -68,3 +68,5 @@ add_subdirectory (select0r)
 add_subdirectory (denoise)
 add_subdirectory (sharpness)
 add_subdirectory (blur)
+
+add_subdirectory (time0r)
