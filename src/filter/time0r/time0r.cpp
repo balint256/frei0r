@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Simon Andreas Eugster (simon.eu@gmail.com)
- * This file is not a Frei0r plugin but a collection of ideas.
+ * Copyright (C) 2010-2014 Balint Seeber (balint256@gmail.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +38,40 @@ This is a sample filter for easy copy/pasting.
 
 The CMakeLists.txt needs to be adjusted as well (both in this directory and in the parent directory).
 Also, don't forget src/Makefile.am.
+*/
+
+/**
+Some notes for mode OP_MINMAXAVE (5):
+
+"op", "Operation"
+"ave_len", "Averaging period"
+	0 - use only input frame, 1 - use only history (i.e. use only first frame)
+	Better to keep this high (0.9)
+"ave_diff_thresh", "Average difference threshold"
+	update MonoMin & MonoMax: 0 - use only mono min/max value, 1 - only use averaged grayscale history value (non-zero can lead to artefacts if not tuned)
+	control how long the 'tail' is
+	works if similar (same) value as next
+"ave_smooth", "Average smoothing"
+	averaging factor for bringing min/max buffers back to averaged history
+	control how blended the 'tail' is
+	works if similar (same) value as previous
+"split_weight", "Min/max split weight"
+	0 - prefer pixels from the smaller difference between max/min and ave, 1 - prefer pixels from the larger difference between max/min and ave
+	When 0.5, next (threshold weight) doesn't have an effect
+"threshold_weight", "Min/max threshold weight"
+	0 - prefer difference b/w averaged gray and min gray, 1 - prefer difference b/w averaged gray and max gray
+
+Last two weights:
+1:1 for dark BG, bring out light (same as 0:0)
+0:1 for dark BG, smooth out dark (ignore light) (same as 1:0)
+
+Defaults are (e.g. for ffplay/ffmpeg):
+5:
+0.0<ave history (background) factor>:
+0.0<min/max threshold re-adj factor>:
+0.0<min/max colour buffer re-adj factor>:
+0.5<min/max split weight>:
+0.5<min/max threshold weight>
 */
 
 class time0r : public frei0r::filter
@@ -791,6 +824,8 @@ public:
         
         if ((uint8_t*)out != pOutput)
             memcpy(out, pOutput, size * 4);
+        
+        // Code copied from another unrelated plugin by Simon Andreas Eugster (simon.eu@gmail.com)
         
         // Just copy input to output.
         // This is useful if ony few changes are made to the output.
