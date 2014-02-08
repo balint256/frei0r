@@ -32,8 +32,12 @@ plugin_LTLIBRARIES = \
 	c0rners.la \
 	cartoon.la \
 	cluster.la \
+	colgate.la \
 	coloradj_RGB.la \
 	colordistance.la \
+	colorhalftone.la \
+	colorize.la \
+	colortap.la \
 	color_only.la \
 	composition.la \
 	contrast0r.la \
@@ -45,9 +49,11 @@ plugin_LTLIBRARIES = \
 	delaygrab.la \
 	difference.la \
 	distort0r.la \
+	dither.la \
 	divide.la \
 	dodge.la \
 	edgeglow.la \
+	emboss.la \
 	equaliz0r.la \
 	flippo.la \
 	G.la \
@@ -62,6 +68,7 @@ plugin_LTLIBRARIES = \
 	IIRblur.la \
 	invert0r.la \
 	ising0r.la \
+	keyspillm0pup.la \
 	lenscorrection.la \
 	letterb0xed.la \
 	levels.la \
@@ -70,6 +77,7 @@ plugin_LTLIBRARIES = \
 	lissajous0r.la \
 	luminance.la \
 	mask0mate.la \
+	medians.la \
 	multiply.la \
 	nervous.la \
 	nois0r.la \
@@ -80,20 +88,25 @@ plugin_LTLIBRARIES = \
 	perspective.la \
 	pixeliz0r.la \
 	plasma.la \
+	posterize.la \
 	pr0be.la \
 	pr0file.la \
 	primaries.la \
 	R.la \
 	RGB.la \
+	rgbnoise.la \
 	saturation.la \
 	saturat0r.la \
 	scanline0r.la \
 	screen.la \
 	select0r.la \
 	sharpness.la \
+	sigmoidaltransfer.la \
 	sobel.la \
+	softglow.la \
 	softlight.la \
 	sopsat.la \
+	spillsupress.la \
 	squareblur.la \
 	subtract.la \
 	tehroxx0r.la \
@@ -106,6 +119,7 @@ plugin_LTLIBRARIES = \
 	three_point_balance.la \
 	threshold0r.la \
 	threelay0r.la \
+	timeout.la \
 	tint0r.la \
 	transparency.la \
 	twolay0r.la \
@@ -143,11 +157,33 @@ facedetect_la_CFLAGS = @OPENCV_CFLAGS@ @CFLAGS@
 facedetect_la_LIBADD = @OPENCV_LIBS@
 endif
 
+if HAVE_CAIRO
+plugin_LTLIBRARIES += cairogradient.la
+cairogradient_la_SOURCES = filter/cairogradient/cairogradient.c
+cairogradient_la_CFLAGS = @CAIRO_CFLAGS@ @CFLAGS@
+cairogradient_la_LIBADD = @CAIRO_LIBS@
+
+plugin_LTLIBRARIES += cairoimagegrid.la
+cairoimagegrid_la_SOURCES = filter/cairoimagegrid/cairoimagegrid.c
+cairoimagegrid_la_CFLAGS = @CAIRO_CFLAGS@ @CFLAGS@
+cairoimagegrid_la_LIBADD = @CAIRO_LIBS@
+
+plugin_LTLIBRARIES += cairoaffineblend.la
+cairoaffineblend_la_SOURCES = mixer2/cairoaffineblend/cairoaffineblend.c
+cairoaffineblend_la_CFLAGS = @CAIRO_CFLAGS@ @CFLAGS@
+cairoaffineblend_la_LIBADD = @CAIRO_LIBS@
+
+plugin_LTLIBRARIES += cairoblend.la
+cairoblend_la_SOURCES = mixer2/cairoblend/cairoblend.c
+cairoblend_la_CFLAGS = @CAIRO_CFLAGS@ @CFLAGS@
+cairoblend_la_LIBADD = @CAIRO_LIBS@
+endif
+
 #
 # FILTERS
 #
 3dflippo_la_SOURCES = filter/3dflippo/3dflippo.c
-alpha0ps_la_SOURCES = filter/alpha0ps/alpha0ps.c
+alpha0ps_la_SOURCES = filter/alpha0ps/alpha0ps.c filter/alpha0ps/fibe_f.h
 alphagrad_la_SOURCES = filter/alpha0ps/alphagrad.c
 alphaspot_la_SOURCES = filter/alpha0ps/alphaspot.c
 B_la_SOURCES = filter/RGB/B.c
@@ -159,8 +195,12 @@ bw0r_la_SOURCES = filter/bw0r/bw0r.c
 c0rners_la_SOURCES = filter/c0rners/c0rners.c filter/c0rners/interp.h
 cartoon_la_SOURCES = filter/cartoon/cartoon.cpp
 cluster_la_SOURCES = filter/cluster/cluster.c
+colgate_la_SOURCES = filter/colgate/colgate.c
 coloradj_RGB_la_SOURCES = filter/coloradj/coloradj_RGB.c
 colordistance_la_SOURCES = filter/colordistance/colordistance.c
+colorhalftone_la_SOURCES = filter/colorhalftone/colorhalftone.c
+colorize_la_SOURCES = filter/colorize/colorize.c
+colortap_la_SOURCES = filter/colortap/colortap.c
 contrast0r_la_SOURCES = filter/contrast0r/contrast0r.c
 curves_la_SOURCES = filter/curves/curves.c
 d90stairsteppingfix_la_SOURCES = filter/d90stairsteppingfix/d90stairsteppingfix.cpp
@@ -168,42 +208,52 @@ defish0r_la_SOURCES = filter/defish0r/defish0r.c filter/defish0r/interp.h
 delay0r_la_SOURCES = filter/delay0r/delay0r.cpp
 delaygrab_la_SOURCES = filter/delaygrab/delaygrab.cpp
 distort0r_la_SOURCES = filter/distort0r/distort0r.c
+dither_la_SOURCES = filter/dither/dither.c
 edgeglow_la_SOURCES = filter/edgeglow/edgeglow.cpp
+emboss_la_SOURCES = filter/emboss/emboss.c
 equaliz0r_la_SOURCES = filter/equaliz0r/equaliz0r.cpp
 flippo_la_SOURCES = filter/flippo/flippo.c
 G_la_SOURCES = filter/RGB/G.c
 gamma_la_SOURCES = filter/gamma/gamma.c
-glow_la_SOURCES = filter/glow/glow.c filter/glow/blur.h
+glow_la_SOURCES = filter/glow/glow.c
 hqdn3d_la_SOURCES = filter/denoise/hqdn3d.c
 hueshift0r_la_SOURCES = filter/hueshift0r/hueshift0r.c filter/hueshift0r/matrix.h
 IIRblur_la_SOURCES = filter/blur/IIRblur.c filter/blur/fibe.h
 invert0r_la_SOURCES = filter/invert0r/invert0r.c
+keyspillm0pup_la_SOURCES = filter/keyspillm0pup/keyspillm0pup.c
 lenscorrection_la_SOURCES = filter/lenscorrection/lenscorrection.c
 letterb0xed_la_SOURCES = filter/letterb0xed/letterb0xed.c
 levels_la_SOURCES = filter/levels/levels.c
 lightgraffiti_la_SOURCES = filter/lightgraffiti/lightgraffiti.cpp
 luminance_la_SOURCES = filter/luminance/luminance.c
-mask0mate_la_SOURCES = filter/mask0mate/mask0mate.c filter/mask0mate/blur.h
+mask0mate_la_SOURCES = filter/mask0mate/mask0mate.c
+medians_la_SOURCES = filter/medians/medians.c filter/medians/ctmf.h filter/medians/small_medians.h
 nervous_la_SOURCES = filter/nervous/nervous.cpp
 nosync0r_la_SOURCES = filter/nosync0r/nosync0r.cpp
 partik0l_la_SOURCES = generator/partik0l/partik0l.cpp
 perspective_la_SOURCES = filter/perspective/perspective.c
 pixeliz0r_la_SOURCES = filter/pixeliz0r/pixeliz0r.c
+posterize_la_SOURCES = filter/posterize/posterize.c
 pr0be_la_SOURCES = filter/measure/pr0be.c filter/measure/measure.h filter/measure/font2.h
 pr0file_la_SOURCES = filter/measure/pr0file.c filter/measure/measure.h filter/measure/font2.h
 primaries_la_SOURCES = filter/primaries/primaries.cpp
 R_la_SOURCES = filter/RGB/R.c
+rgbnoise_la_SOURCES = filter/rgbnoise/rgbnoise.c
 saturat0r_la_SOURCES = filter/saturat0r/saturat0r.c
 scanline0r_la_SOURCES = filter/scanline0r/scanline0r.cpp
 select0r_la_SOURCES = filter/select0r/select0r.c
 sharpness_la_SOURCES = filter/sharpness/sharpness.c
+sigmoidaltransfer_la_SOURCES = filter/sigmoidaltransfer/sigmoidaltransfer.c
 sobel_la_SOURCES = filter/sobel/sobel.cpp
+softglow_la_SOURCES = filter/softglow/softglow.c
 sopsat_la_SOURCES = filter/sopsat/sopsat.cpp
+spillsupress_la_SOURCES = filter/spillsupress/spillsupress.c
 squareblur_la_SOURCES = filter/squareblur/squareblur.c
 tehroxx0r_la_SOURCES = filter/tehroxx0r/tehRoxx0r.c
 threelay0r_la_SOURCES = filter/threelay0r/threelay0r.cpp
 three_point_balance_la_SOURCES = filter/three_point_balance/three_point_balance.c
 threshold0r_la_SOURCES = filter/threshold0r/threshold0r.c
+timeout_la_SOURCES = filter/timeout/timeout.cpp
 tint0r_la_SOURCES = filter/tint0r/tint0r.c
 transparency_la_SOURCES = filter/transparency/transparency.c
 twolay0r_la_SOURCES = filter/twolay0r/twolay0r.cpp
