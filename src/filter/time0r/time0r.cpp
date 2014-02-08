@@ -55,8 +55,8 @@ public:
         OP_MAX              = 2,    // -
         OP_AVE              = 3,    // <window length>
         OP_MINMAX           = 4,    // -
-        OP_MINMAXAVE        = 5,    // <ave history (background) factor>:<min/max threshold re-adj factor>:<min/max colour buffer re-adj factor>:<min/ax split weight>
-        OP_AVETHRESH        = 6,    // <window length>:<ave diff threshold>
+        OP_MINMAXAVE        = 5,    // <ave history (background) factor>:<min/max threshold re-adj factor>:<min/max colour buffer re-adj factor>:<min/max split weight>:<min/max threshold weight>
+        OP_AVETHRESH        = 6,    // <window length>:<ave diff threshold>:<skip>
         OP_AVETHRESHDEBUG   = 7,    //
         OP_MINMAXAVEDEBUG   = 8,    //
         OP_HSV              = 9,
@@ -78,7 +78,7 @@ private:
     int m_iAverageBufferIndex;
     double m_dAverageDiffThreshold;
     float *m_fMonoMin, *m_fMonoMax, *m_fHistory, *m_fMin, *m_fMax, *m_fAve;
-    double m_dAverageSmoothing, m_dMinMaxSplitWeight;
+    double m_dAverageSmoothing, m_dMinMaxSplitWeight, m_dMinMaxThresholdWeight;
 public:
     time0r(unsigned int width, unsigned int height)
         : m_pBuffer(NULL)
@@ -105,6 +105,7 @@ public:
         , m_fMin(NULL)
         , m_fMax(NULL)
         , m_dMinMaxSplitWeight(0.5)
+        , m_dMinMaxThresholdWeight(0.5)
         , m_fAve(NULL)
     {
         //register_param(m_barSize, "barSize", "Size of the black bar");
@@ -115,6 +116,7 @@ public:
         register_param(m_dAverageDiffThreshold, "ave_diff_thresh", "Average difference threshold");
         register_param(m_dAverageSmoothing, "ave_smooth", "Average smoothing");
         register_param(m_dMinMaxSplitWeight, "split_weight", "Min/max split weight");
+        register_param(m_dMinMaxThresholdWeight, "threshold_weight", "Min/max threshold weight");
 
         m_pBuffer = new uint8_t[width * height * 4];
         memset(m_pBuffer, 0x00, width * height * 4);
@@ -552,7 +554,8 @@ public:
                     fMinGrey = to_grey(m_fMin + i*3);
                     fMaxGrey = to_grey(m_fMax + i*3);
                     
-                    if (abs(fMaxGrey - fAveGrey) >= abs(fAveGrey - fMinGrey))
+                    //if (abs(fMaxGrey - fAveGrey) >= abs(fAveGrey - fMinGrey))
+                    if (abs(fMaxGrey - fAveGrey)*(m_dMinMaxThresholdWeight) >= abs(fAveGrey - fMinGrey)*(1.0f - m_dMinMaxThresholdWeight))
                     {
                         memcpy(fA, m_fMax + i*3, sizeof(float) * 3);
                         memcpy(fB, m_fMin + i*3, sizeof(float) * 3);
